@@ -43,12 +43,23 @@ func TestQueue(t *testing.T) {
 		}
 	})
 
-	t.Run("removing a from empty task queue returns an error", func(t *testing.T) {
+	t.Run("removing from empty task queue returns an error", func(t *testing.T) {
 		q := TaskQueue{}
 		_, err := q.dequeue()
 
 		if err == nil {
 			t.Error("dequeue from an empty queue should issue error")
+		}
+	})
+
+	t.Run("can create a task", func(t *testing.T) {
+		task := NewTask("task1", 10)
+
+		if task.ID != "task1" {
+			t.Errorf("Created task does not have correct name")
+		}
+		if task.Data.MaxRuntime != 10 {
+			t.Errorf("Created task does not have correct name")
 		}
 	})
 }
