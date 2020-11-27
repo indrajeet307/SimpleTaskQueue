@@ -27,6 +27,15 @@ func (q *TaskQueue) enqueue(t *Task) {
 	q.Tasks = append(q.Tasks, *t)
 }
 
+func (q *TaskQueue) end() (t *Task, err error) {
+	var task Task
+	if q.size() > 0 {
+		task = q.Tasks[len(q.Tasks)-1]
+		return &task, nil
+	}
+	return nil, fmt.Errorf("Cannot dequeue from an empty queue")
+}
+
 type TaskData struct {
 	MaxRuntime int32
 	TimeRemaining int32

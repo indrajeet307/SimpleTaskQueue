@@ -62,4 +62,28 @@ func TestQueue(t *testing.T) {
 			t.Errorf("Created task does not have correct name")
 		}
 	})
+
+	t.Run("can get last task", func(t *testing.T) {
+		q := TaskQueue{}
+		task := NewTask("task1", 10)
+
+		q.enqueue(task)
+
+		lastt, err := q.end()
+		if err != nil {
+			t.Errorf("Error fetching last task from the queue")
+		}
+		if lastt.ID != "task1" {
+			t.Errorf("Wrong task returned as end task")
+		}
+	})
+
+	t.Run("empty queue returns error when asked for end", func(t *testing.T) {
+		q := TaskQueue{}
+
+		_, err := q.end()
+		if err == nil {
+			t.Errorf("Error empty queue should raise error if asked for last element")
+		}
+	})
 }
