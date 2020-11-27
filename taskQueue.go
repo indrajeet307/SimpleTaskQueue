@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"time"
 	"math/rand"
 	"sync"
+	"time"
 )
 
 type TaskQueue struct {
@@ -39,7 +39,7 @@ func (q *TaskQueue) end() (t *Task, err error) {
 }
 
 type TaskData struct {
-	MaxRuntime int32
+	MaxRuntime    int32
 	TimeRemaining int32
 }
 
@@ -60,10 +60,10 @@ type Task struct {
 	Status      TaskStatus
 	IsCompleted bool
 	SubmitTime  time.Time
-	Data    TaskData
+	Data        TaskData
 }
 
-func (t *Task) updateRemainingTime () {
+func (t *Task) updateRemainingTime() {
 	if t.IsCompleted {
 		return
 	}
@@ -82,12 +82,12 @@ func (t *Task) updateRemainingTime () {
 
 func NewTask(name string, runtime int32) (t *Task) {
 	return &Task{
-		ID: name,
-		Status: RUNNING,
+		ID:          name,
+		Status:      RUNNING,
 		IsCompleted: false,
-		SubmitTime: time.Now(),
+		SubmitTime:  time.Now(),
 		Data: TaskData{
-			MaxRuntime: runtime,
+			MaxRuntime:    runtime,
 			TimeRemaining: runtime,
 		},
 	}
@@ -146,7 +146,7 @@ func Cleaner(q *TaskQueue, quit chan int, wg *sync.WaitGroup) {
 				if err != nil {
 					break
 				}
-				if ! task.IsCompleted {
+				if !task.IsCompleted {
 					q.enqueue(task)
 				} else {
 					fmt.Println(task.ID, "task cleared, status", task.Status)
