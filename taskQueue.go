@@ -52,6 +52,9 @@ const (
 	TIMEDOUT
 )
 
+const MAX_RUNTIME = 100000
+const CLEANER_SLEEP_TIME = 100 * time.Millisecond
+
 type Task struct {
 	ID          string
 	Status      TaskStatus
@@ -95,16 +98,16 @@ func main() {
 	q := TaskQueue{}
 
 	r := rand.New(rand.NewSource(123))
-	q.enqueue(NewTask("task1", r.Int31n(100000)))
-	q.enqueue(NewTask("task2", r.Int31n(100000)))
-	q.enqueue(NewTask("task3", r.Int31n(100000)))
-	q.enqueue(NewTask("task4", r.Int31n(100000)))
-	q.enqueue(NewTask("task5", r.Int31n(100000)))
-	q.enqueue(NewTask("task6", r.Int31n(100000)))
-	q.enqueue(NewTask("task7", r.Int31n(100000)))
-	q.enqueue(NewTask("task8", r.Int31n(100000)))
-	q.enqueue(NewTask("task9", r.Int31n(100000)))
-	q.enqueue(NewTask("task0", r.Int31n(100000)))
+	q.enqueue(NewTask("task1", r.Int31n(MAX_RUNTIME)))
+	q.enqueue(NewTask("task2", r.Int31n(MAX_RUNTIME)))
+	q.enqueue(NewTask("task3", r.Int31n(MAX_RUNTIME)))
+	q.enqueue(NewTask("task4", r.Int31n(MAX_RUNTIME)))
+	q.enqueue(NewTask("task5", r.Int31n(MAX_RUNTIME)))
+	q.enqueue(NewTask("task6", r.Int31n(MAX_RUNTIME)))
+	q.enqueue(NewTask("task7", r.Int31n(MAX_RUNTIME)))
+	q.enqueue(NewTask("task8", r.Int31n(MAX_RUNTIME)))
+	q.enqueue(NewTask("task9", r.Int31n(MAX_RUNTIME)))
+	q.enqueue(NewTask("task0", r.Int31n(MAX_RUNTIME)))
 
 	shd := make(chan int, 1) // schedular done
 	wg := &sync.WaitGroup{}
@@ -153,7 +156,7 @@ func Cleaner(q *TaskQueue, quit chan int, wg *sync.WaitGroup) {
 				}
 			}
 			q.Unlock()
-			time.Sleep(100*time.Millisecond)
+			time.Sleep(CLEANER_SLEEP_TIME)
 		}
 	}
 }
