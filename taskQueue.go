@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"time"
 	"math/rand"
+	"sync"
 )
 
 type TaskQueue struct {
+	sync.Mutex
 	Tasks []Task
 }
 
@@ -80,5 +82,73 @@ func NewTask(name string, runtime int32) (t *Task) {
 			MaxRuntime: runtime,
 			TimeRemaining: runtime,
 		},
+	}
+}
+
+func main() {
+
+	q := TaskQueue{}
+
+	r := rand.New(rand.NewSource(123))
+	q.enqueue(NewTask("task1", r.Int31n(100000)))
+	q.enqueue(NewTask("task2", r.Int31n(100000)))
+	q.enqueue(NewTask("task3", r.Int31n(100000)))
+	q.enqueue(NewTask("task4", r.Int31n(100000)))
+	q.enqueue(NewTask("task5", r.Int31n(100000)))
+	q.enqueue(NewTask("task6", r.Int31n(100000)))
+	q.enqueue(NewTask("task7", r.Int31n(100000)))
+	q.enqueue(NewTask("task8", r.Int31n(100000)))
+	q.enqueue(NewTask("task9", r.Int31n(100000)))
+	q.enqueue(NewTask("task0", r.Int31n(100000)))
+
+	shd := make(chan int, 1) // schedular done
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	go Cleaner(&q, shd, wg)
+	for {
+		q.Lock()
+		task, err := q.dequeue()
+		if err != nil {
+			break
+		}
+		task.updateRemainingTime()
+		q.enqueue(task)
+		q.Unlock()
+	}
+	shd <- 1
+	fmt.Println("Exiting")
+	wg.Wait()
+}
+
+func Cleaner(q *TaskQueue, quit chan int, wg *sync.WaitGroup) {
+	for {
+		select {
+		case <-quit:
+			wg.Done()
+			return
+		default:
+			fmt.Println("Cleaner Invoked")
+			q.Lock()
+			last_task, err := q.end()
+			if err != nil {
+				break
+			}
+			for {
+				task, err := q.dequeue()
+				if err != nil {
+					break
+				}
+				if ! task.IsCompleted {
+					q.enqueue(task)
+				} else {
+					fmt.Println(task.ID, "task cleared")
+				}
+				if task.ID == last_task.ID {
+					break
+				}
+			}
+			q.Unlock()
+			time.Sleep(100*time.Millisecond)
+		}
 	}
 }
