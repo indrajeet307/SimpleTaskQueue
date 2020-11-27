@@ -20,8 +20,8 @@ type Task struct {
 Implement the above mentioned logic with proper error handling.
 
 Example
-
 =======
+
 Real-world scenario - 3 separate workers on the queue
 1. Adding the task (add 9 emails in the queue (task))
 2. Working on the task - picks up the task and processes them (the processing can fail or succeed) - read the
@@ -30,3 +30,40 @@ Real-world scenario - 3 separate workers on the queue
    email keeps failing then remove it from the queue and log the problem) !!!!
 
 Upload to GitHub and send back a link to email address. Don’t send zip files in email, just the link.
+
+Note: This project requires atleast go 1.13 and higher
+
+Formating project
+=================
+
+```
+make fmt
+```
+
+Buiding project
+===============
+
+```
+make build
+```
+
+Testing project
+===============
+
+```
+make test
+```
+
+Running project
+===============
+
+```
+make run
+```
+
+Cleaning project
+================
+
+```
+make clean
+```
