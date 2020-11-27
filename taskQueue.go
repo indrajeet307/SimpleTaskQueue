@@ -64,11 +64,16 @@ func (t *Task) updateRemainingTime () {
 	if t.IsCompleted {
 		return
 	}
-	r := rand.New(rand.NewSource(99))
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	value := r.Int31n(5)
 	t.Data.TimeRemaining -= value
-	if t.Data.TimeRemaining <= 0 {
+	if t.Data.TimeRemaining < 0 {
 		t.IsCompleted = true
+		t.Status = TIMEDOUT
+	}
+	if t.Data.TimeRemaining == 0 {
+		t.IsCompleted = true
+		t.Status = COMPLETED
 	}
 }
 
@@ -141,7 +146,7 @@ func Cleaner(q *TaskQueue, quit chan int, wg *sync.WaitGroup) {
 				if ! task.IsCompleted {
 					q.enqueue(task)
 				} else {
-					fmt.Println(task.ID, "task cleared")
+					fmt.Println(task.ID, "task cleared, status", task.Status)
 				}
 				if task.ID == last_task.ID {
 					break
